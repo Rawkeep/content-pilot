@@ -31,8 +31,12 @@ contentpilot erstellen "Wir haben den Export-Dokumenten-Check gelauncht: 196 Lä
 Das war's — die Backend-Wahl läuft automatisch: **claude CLI** (dein Claude-Abo,
 kein API-Key) → **Ollama** (lokal) → verständliche Fehlermeldung.
 
+**Der einfachste Start (Mac): Doppelklick auf `content-pilot-starten.command`** —
+installiert beim ersten Mal alles Nötige, startet die Oberfläche und öffnet den
+Browser von selbst. Zweiter Doppelklick? Öffnet nur den Browser (kein Crash).
+
 ```bash
-contentpilot ui                       # Web-Oberfläche: http://localhost:8801
+contentpilot ui                       # dasselbe per Terminal: http://localhost:8801
 contentpilot kalender                 # was liegt an?
 contentpilot senden 3                 # Eintrag 3 an Postiz übergeben
 contentpilot senden 3 --sofort        # sofort posten statt planen

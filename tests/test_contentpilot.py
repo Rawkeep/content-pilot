@@ -170,3 +170,31 @@ def test_backend_auswahl_erklaert_deutsch(tmp_path, monkeypatch):
     monkeypatch.setattr(backends, "ollama_reachable", lambda s: False)
     with pytest.raises(BackendError, match="Claude Code CLI"):
         backends.create_backend(Settings(backend="auto"))
+
+
+# ── Doppelstart & Port-Fallback (Lektion aus devteam) ───────────────────
+def test_ui_doppelstart_und_port_fallback():
+    import socket as socketlib
+    import threading
+
+    from contentpilot import ui
+
+    server = ui.ThreadingHTTPServer(("127.0.0.1", 0), ui._Handler)
+    port = server.server_address[1]
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        assert ui._existing_ui(port) is True
+        assert ui._existing_ui(1) is False
+    finally:
+        server.shutdown()
+
+    blocker = socketlib.socket()
+    blocker.bind(("127.0.0.1", 0))
+    blocker.listen(1)
+    busy = blocker.getsockname()[1]
+    try:
+        ausweich = ui._bind(busy)
+        assert ausweich.server_address[1] != busy
+        ausweich.server_close()
+    finally:
+        blocker.close()

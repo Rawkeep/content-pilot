@@ -305,8 +305,39 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(404, b"nicht gefunden", "text/plain")
 
 
+def _existing_ui(port: int) -> bool:
+    """Läuft auf dem Port schon ein Content-Pilot? (Doppelstart-Erkennung)."""
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/genstatus", timeout=1) as response:
+            return "running" in response.read(200).decode("utf-8", "replace")
+    except OSError:
+        return False
+
+
+def _bind(port: int) -> ThreadingHTTPServer:
+    """Bindet an den Port — ist er (fremd) belegt, an den nächsten freien."""
+    last_error: Optional[OSError] = None
+    for candidate in range(port, port + 11):
+        try:
+            return ThreadingHTTPServer(("127.0.0.1", candidate), _Handler)
+        except OSError as error:
+            last_error = error
+    raise OSError(f"Kein freier Port zwischen {port} und {port + 10}.") from last_error
+
+
 def serve(port: int = 8801, open_browser: bool = True) -> None:
-    server = ThreadingHTTPServer(("127.0.0.1", port), _Handler)
+    if _existing_ui(port):
+        existing = f"http://localhost:{port}"
+        print(f"Content-Pilot läuft bereits: {existing} — öffne den Browser.")
+        if open_browser:
+            import webbrowser
+
+            webbrowser.open(existing)
+        return
+    server = _bind(port)
+    port = int(server.server_address[1])
     url = f"http://localhost:{port}"
     print(f"Content-Pilot läuft: {url}  (Strg+C beendet)")
     if open_browser:

@@ -1,0 +1,61 @@
+# Postiz self-hosted — Basis für den Content-Pilot (siehe SETUP-POSTIZ.md).
+# Quelle des Setups: offizielle Postiz-Doku (docs.postiz.com) — vor dem ersten
+# Start JWT_SECRET ändern!
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:latest
+    restart: always
+    environment:
+      MAIN_URL: "http://localhost:5000"
+      FRONTEND_URL: "http://localhost:5000"
+      NEXT_PUBLIC_BACKEND_URL: "http://localhost:5000/api"
+      JWT_SECRET: "BITTE-AENDERN-langer-zufaelliger-wert"
+      DATABASE_URL: "postgresql://postiz:postiz@postiz-postgres:5432/postiz"
+      REDIS_URL: "redis://postiz-redis:6379"
+      BACKEND_INTERNAL_URL: "http://localhost:3000"
+      IS_GENERAL: "true"
+      STORAGE_PROVIDER: "local"
+      UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
+    volumes:
+      - postiz-config:/config/
+      - postiz-uploads:/uploads/
+    ports:
+      - "5000:5000"
+    depends_on:
+      postiz-postgres:
+        condition: service_healthy
+      postiz-redis:
+        condition: service_healthy
+
+  postiz-postgres:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postiz
+      POSTGRES_USER: postiz
+      POSTGRES_DB: postiz
+    volumes:
+      - postiz-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postiz -d postiz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postiz-redis:
+    image: redis:7.2
+    restart: always
+    volumes:
+      - postiz-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postiz-postgres:
+  postiz-redis-data:
+  postiz-config:
+  postiz-uploads:

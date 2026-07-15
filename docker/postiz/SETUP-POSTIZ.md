@@ -55,3 +55,18 @@ Der Post erscheint in Postiz im Kalender und wird von dort veröffentlicht.
   maßgeblich ist <https://docs.postiz.com/installation/docker-compose>.
 - Updates: `docker compose pull && docker compose up -d`.
 - Backup: die Docker-Volumes `postiz-postgres` und `postiz-config` sichern.
+
+## 5. Optional: automatische Backups (databasement)
+
+[databasement](https://github.com/David-Crty/databasement) (MIT) sichert die
+Postiz-Datenbank automatisch — täglich/wöchentlich, AES-256-verschlüsselt,
+nach lokal, S3 oder SFTP, mit Benachrichtigung (E-Mail/Telegram/Webhook):
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.backup.yml up -d
+```
+
+Dann <http://localhost:2226> öffnen → Account anlegen → Server hinzufügen:
+Host `postiz-postgres`, Datenbank/User/Passwort `postiz` (bzw. deine Werte
+aus der docker-compose.yml) → Zeitplan „täglich" + Aufbewahrung setzen.
+Restore geht über dieselbe Oberfläche — auch auf einen anderen Server.

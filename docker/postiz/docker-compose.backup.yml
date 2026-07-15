@@ -1,0 +1,26 @@
+# Optional: databasement — self-gehosteter Backup-Manager mit Web-UI (MIT).
+# Sichert die Postiz-Postgres (und beliebige weitere DBs: MySQL, MongoDB,
+# SQLite, Redis …) nach lokal, S3 oder SFTP — verschlüsselt (AES-256).
+#
+# Start ZUSAMMEN mit Postiz:
+#   docker compose -f docker-compose.yml -f docker-compose.backup.yml up -d
+# Web-UI: http://localhost:2226  (ersten Account anlegen, dann in der UI:
+# Server "postiz-postgres" / DB "postiz" / User+Passwort aus docker-compose.yml
+# eintragen und einen täglichen Zeitplan mit Aufbewahrung anlegen.)
+services:
+  databasement:
+    image: davidcrty/databasement:1
+    restart: always
+    environment:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /data/database.sqlite
+      ENABLE_QUEUE_WORKER: "true"
+    volumes:
+      - databasement-data:/data
+      - databasement-backups:/backups
+    ports:
+      - "2226:2226"
+
+volumes:
+  databasement-data:
+  databasement-backups:

@@ -28,6 +28,30 @@ Developer-App-Keys — die Anleitung je Plattform steht in der Postiz-Doku
 > Tipp für den Start: **LinkedIn zuerst** — der Flow ist am einfachsten,
 > und für dein Agentur-Marketing ist es ohnehin der wichtigste Kanal.
 
+### LinkedIn verbinden (einmalig, ~10 Minuten)
+
+Self-hosted Postiz braucht eine **eigene LinkedIn-Developer-App**:
+
+1. <https://developer.linkedin.com> → **Create app**. Pflichtfeld ist eine
+   verknüpfte **LinkedIn-Unternehmensseite** — falls noch keine existiert,
+   vorher unter <https://www.linkedin.com/company/setup/new/> anlegen (2 Min.).
+2. In der App → Tab **Products**: **„Share on LinkedIn"** und **„Sign In with
+   LinkedIn using OpenID Connect"** anfordern (beide werden sofort freigeschaltet).
+3. Tab **Auth** → **Authorized redirect URLs** eintragen:
+   `http://localhost:5000/integrations/social/linkedin`
+   (bzw. deine `FRONTEND_URL` + `/integrations/social/linkedin`).
+4. **Client ID** und **Primary Client Secret** (Tab Auth) in die
+   `docker-compose.yml` bei `LINKEDIN_CLIENT_ID`/`LINKEDIN_CLIENT_SECRET`
+   eintragen → `docker compose up -d` (Container startet neu).
+5. Postiz → **Add Channel → LinkedIn** → OAuth durchklicken → dein Profil
+   erscheint als Kanal. Fertig.
+
+> **Persönliches Profil vs. Unternehmensseite:** Posten aufs persönliche
+> Profil funktioniert sofort („Share on LinkedIn"). Für das Posten **als
+> Unternehmensseite** verlangt LinkedIn zusätzlich die Freigabe der
+> Community-Management-API (Antrag, dauert Tage bis Wochen) — fürs
+> Agentur-Marketing ist das persönliche Profil ohnehin der stärkere Kanal.
+
 ## 3. API-Key für den Content-Pilot holen
 
 Postiz → **Settings → Public API** → Key kopieren. Dann:

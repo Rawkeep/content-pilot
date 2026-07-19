@@ -5,6 +5,13 @@ Veröffentlichen). Es läuft komplett auf deinem Rechner/Server — DSGVO-freund
 
 ## 1. Starten
 
+**Der einfachste Weg (Mac): Doppelklick auf `postiz-starten.command`** in
+diesem Ordner — setzt das JWT-Secret automatisch, fragt optional die
+LinkedIn-Zugangsdaten ab, startet die Container und öffnet den Browser.
+Erneuter Doppelklick später: trägt LinkedIn nach bzw. startet einfach neu.
+
+<details><summary>Manuell (Terminal)</summary>
+
 ```bash
 cd docker/postiz
 ```
@@ -14,6 +21,8 @@ In `docker-compose.yml` **JWT_SECRET ändern** (irgendein langer Zufallswert), d
 ```bash
 docker compose up -d
 ```
+
+</details>
 
 Nach ~1 Minute: <http://localhost:5000> öffnen → Konto anlegen (erste
 Registrierung wird Admin).

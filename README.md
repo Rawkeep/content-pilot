@@ -57,7 +57,7 @@ Kurzfassung: `docker compose up -d` im Ordner `docker/postiz/`, Social-Accounts
 in Postiz verbinden, API-Key holen, dann:
 
 ```bash
-export CP_POSTIZ_URL="http://localhost:5000/api"
+export CP_POSTIZ_URL="http://localhost:5050/api"
 export CP_POSTIZ_API_KEY="<Postiz → Settings → Public API>"
 ```
 
@@ -71,7 +71,7 @@ den Kalender pflegen geht auch offline (Copy-Paste bleibt ja immer).
 | `CP_BACKEND` | `auto` | `auto` \| `claude` (Abo) \| `ollama` \| `mock` |
 | `CP_MODEL` | `auto` | Modell-Override fürs Backend |
 | `CP_DATA_DIR` | `~/.content-pilot` | Kalender + Profil (rein lokal) |
-| `CP_POSTIZ_URL` | *(leer)* | z. B. `http://localhost:5000/api` |
+| `CP_POSTIZ_URL` | *(leer)* | z. B. `http://localhost:5050/api` |
 | `CP_POSTIZ_API_KEY` | *(leer)* | Postiz → Settings → Public API |
 
 ## Die Invarianten

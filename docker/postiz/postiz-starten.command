@@ -49,11 +49,11 @@ docker compose up -d
 
 # 5) Warten bis die Oberfläche antwortet, dann Browser öffnen
 for i in $(seq 1 90); do
-  if curl -sf http://localhost:5000 >/dev/null 2>&1; then break; fi
+  if curl -sf http://localhost:5050 >/dev/null 2>&1; then break; fi
   sleep 2
 done
-open "http://localhost:5000" 2>/dev/null || xdg-open "http://localhost:5000" 2>/dev/null \
-  || echo "→ Bitte http://localhost:5000 im Browser öffnen."
+open "http://localhost:5050" 2>/dev/null || xdg-open "http://localhost:5050" 2>/dev/null \
+  || echo "→ Bitte http://localhost:5050 im Browser öffnen."
 
 echo
 echo "✓ Fertig! Im Browser: Konto anlegen (erste Registrierung = Admin),"

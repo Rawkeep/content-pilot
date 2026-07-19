@@ -6,9 +6,9 @@ services:
     image: ghcr.io/gitroomhq/postiz-app:latest
     restart: always
     environment:
-      MAIN_URL: "http://localhost:5000"
-      FRONTEND_URL: "http://localhost:5000"
-      NEXT_PUBLIC_BACKEND_URL: "http://localhost:5000/api"
+      MAIN_URL: "http://localhost:5050"
+      FRONTEND_URL: "http://localhost:5050"
+      NEXT_PUBLIC_BACKEND_URL: "http://localhost:5050/api"
       JWT_SECRET: "BITTE-AENDERN-langer-zufaelliger-wert"
       DATABASE_URL: "postgresql://postiz:postiz@postiz-postgres:5432/postiz"
       REDIS_URL: "redis://postiz-redis:6379"
@@ -24,7 +24,8 @@ services:
       - postiz-config:/config/
       - postiz-uploads:/uploads/
     ports:
-      - "5000:5000"
+      # 5050 statt 5000 — Port 5000 ist auf macOS vom AirPlay-Empfänger belegt
+      - "5050:5000"
     depends_on:
       postiz-postgres:
         condition: service_healthy

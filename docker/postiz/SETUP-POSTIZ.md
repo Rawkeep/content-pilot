@@ -24,7 +24,7 @@ docker compose up -d
 
 </details>
 
-Nach ~1 Minute: <http://localhost:5000> öffnen → Konto anlegen (erste
+Nach ~1 Minute: <http://localhost:5050> öffnen → Konto anlegen (erste
 Registrierung wird Admin).
 
 ## 2. Social-Accounts verbinden
@@ -47,7 +47,7 @@ Self-hosted Postiz braucht eine **eigene LinkedIn-Developer-App**:
 2. In der App → Tab **Products**: **„Share on LinkedIn"** und **„Sign In with
    LinkedIn using OpenID Connect"** anfordern (beide werden sofort freigeschaltet).
 3. Tab **Auth** → **Authorized redirect URLs** eintragen:
-   `http://localhost:5000/integrations/social/linkedin`
+   `http://localhost:5050/integrations/social/linkedin`
    (bzw. deine `FRONTEND_URL` + `/integrations/social/linkedin`).
 4. **Client ID** und **Primary Client Secret** (Tab Auth) in die
    `docker-compose.yml` bei `LINKEDIN_CLIENT_ID`/`LINKEDIN_CLIENT_SECRET`
@@ -66,7 +66,7 @@ Self-hosted Postiz braucht eine **eigene LinkedIn-Developer-App**:
 Postiz → **Settings → Public API** → Key kopieren. Dann:
 
 ```bash
-export CP_POSTIZ_URL="http://localhost:5000/api"
+export CP_POSTIZ_URL="http://localhost:5050/api"
 export CP_POSTIZ_API_KEY="<dein-key>"
 ```
 

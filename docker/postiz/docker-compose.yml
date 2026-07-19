@@ -12,6 +12,7 @@ services:
       JWT_SECRET: "BITTE-AENDERN-langer-zufaelliger-wert"
       DATABASE_URL: "postgresql://postiz:postiz@postiz-postgres:5432/postiz"
       REDIS_URL: "redis://postiz-redis:6379"
+      TEMPORAL_ADDRESS: "postiz-temporal:7233"
       BACKEND_INTERNAL_URL: "http://localhost:3000"
       IS_GENERAL: "true"
       # LinkedIn-Developer-App (Pflicht für den LinkedIn-Kanal, siehe SETUP-POSTIZ.md):
@@ -31,6 +32,8 @@ services:
         condition: service_healthy
       postiz-redis:
         condition: service_healthy
+      postiz-temporal:
+        condition: service_started
 
   postiz-postgres:
     image: postgres:17-alpine
@@ -63,3 +66,18 @@ volumes:
   postiz-redis-data:
   postiz-config:
   postiz-uploads:
+
+  # Workflow-Engine — von neueren Postiz-Versionen vorausgesetzt (Port 7233).
+  # auto-setup legt die Temporal-Datenbanken in der vorhandenen Postgres an.
+  postiz-temporal:
+    image: temporalio/auto-setup:1.28.1
+    restart: always
+    environment:
+      DB: "postgres12"
+      DB_PORT: "5432"
+      POSTGRES_USER: "postiz"
+      POSTGRES_PWD: "postiz"
+      POSTGRES_SEEDS: "postiz-postgres"
+    depends_on:
+      postiz-postgres:
+        condition: service_healthy

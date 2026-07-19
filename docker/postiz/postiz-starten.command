@@ -1,9 +1,10 @@
 #!/bin/bash
 # ◆ Postiz-Starter — Doppelklick genügt.
-# Erledigt automatisch: JWT-Secret setzen, LinkedIn-Zugangsdaten abfragen
-# (optional, jederzeit nachholbar), Container starten, Browser öffnen.
+# Secrets (JWT, LinkedIn) liegen in der lokalen .env (nicht in Git) —
+# dadurch kollidiert ein späteres 'git pull' nie mit deinen Einstellungen.
 set -e
 cd "$(dirname "$0")"
+ENVFILE=".env"
 
 echo "◆ Postiz-Starter für den Content-Pilot"
 echo
@@ -18,15 +19,14 @@ if ! docker info >/dev/null 2>&1; then
 fi
 echo "✓ Docker läuft."
 
-# 2) JWT_SECRET automatisch setzen (nur beim allerersten Start nötig)
-if grep -q 'BITTE-AENDERN' docker-compose.yml; then
-  SECRET=$(openssl rand -hex 32)
-  perl -pi -e "s/BITTE-AENDERN-langer-zufaelliger-wert/$SECRET/" docker-compose.yml
+# 2) JWT_SECRET in .env (nur beim allerersten Start)
+if ! grep -q '^JWT_SECRET=' "$ENVFILE" 2>/dev/null; then
+  echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$ENVFILE"
   echo "✓ Sicherheits-Schlüssel (JWT_SECRET) automatisch gesetzt."
 fi
 
-# 3) LinkedIn-Zugangsdaten — optional, einfach Enter drücken zum Überspringen
-if grep -q 'LINKEDIN_CLIENT_ID: ""' docker-compose.yml; then
+# 3) LinkedIn-Zugangsdaten — optional, Enter zum Überspringen
+if ! grep -q '^LINKEDIN_CLIENT_ID=' "$ENVFILE" 2>/dev/null; then
   echo
   echo "LinkedIn-Developer-App (Anleitung: SETUP-POSTIZ.md, Abschnitt LinkedIn)."
   echo "Falls du Client ID & Secret schon hast, hier einfügen — sonst Enter,"
@@ -34,8 +34,10 @@ if grep -q 'LINKEDIN_CLIENT_ID: ""' docker-compose.yml; then
   read -p "  Client ID (oder Enter): " LI_ID
   if [ -n "$LI_ID" ]; then
     read -p "  Client Secret: " LI_SECRET
-    perl -pi -e "s/LINKEDIN_CLIENT_ID: \"\"/LINKEDIN_CLIENT_ID: \"$LI_ID\"/" docker-compose.yml
-    perl -pi -e "s/LINKEDIN_CLIENT_SECRET: \"\"/LINKEDIN_CLIENT_SECRET: \"$LI_SECRET\"/" docker-compose.yml
+    {
+      echo "LINKEDIN_CLIENT_ID=$LI_ID"
+      echo "LINKEDIN_CLIENT_SECRET=$LI_SECRET"
+    } >> "$ENVFILE"
     echo "✓ LinkedIn-Zugangsdaten eingetragen."
   else
     echo "→ Übersprungen — LinkedIn später per erneutem Doppelklick verbinden."
@@ -58,3 +60,5 @@ open "http://localhost:5050" 2>/dev/null || xdg-open "http://localhost:5050" 2>/
 echo
 echo "✓ Fertig! Im Browser: Konto anlegen (erste Registrierung = Admin),"
 echo "  dann 'Add Channel' → LinkedIn."
+echo "  Hinweis: Nach dem ersten Start braucht das Backend noch 1–2 Minuten"
+echo "  (Temporal richtet sich ein) — bei Fehlern kurz warten und neu laden."

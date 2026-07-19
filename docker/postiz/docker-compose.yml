@@ -61,12 +61,6 @@ services:
       timeout: 3s
       retries: 5
 
-volumes:
-  postiz-postgres:
-  postiz-redis-data:
-  postiz-config:
-  postiz-uploads:
-
   # Workflow-Engine — von neueren Postiz-Versionen vorausgesetzt (Port 7233).
   # auto-setup legt die Temporal-Datenbanken in der vorhandenen Postgres an.
   postiz-temporal:
@@ -81,3 +75,10 @@ volumes:
     depends_on:
       postiz-postgres:
         condition: service_healthy
+
+
+volumes:
+  postiz-postgres:
+  postiz-redis-data:
+  postiz-config:
+  postiz-uploads:

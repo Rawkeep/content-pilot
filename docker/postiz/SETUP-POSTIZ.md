@@ -5,6 +5,13 @@ Veröffentlichen). Es läuft komplett auf deinem Rechner/Server — DSGVO-freund
 
 ## 1. Starten
 
+**Der einfachste Weg (Mac): Doppelklick auf `postiz-starten.command`** in
+diesem Ordner — setzt das JWT-Secret automatisch, fragt optional die
+LinkedIn-Zugangsdaten ab, startet die Container und öffnet den Browser.
+Erneuter Doppelklick später: trägt LinkedIn nach bzw. startet einfach neu.
+
+<details><summary>Manuell (Terminal)</summary>
+
 ```bash
 cd docker/postiz
 ```
@@ -15,7 +22,9 @@ In `docker-compose.yml` **JWT_SECRET ändern** (irgendein langer Zufallswert), d
 docker compose up -d
 ```
 
-Nach ~1 Minute: <http://localhost:5000> öffnen → Konto anlegen (erste
+</details>
+
+Nach ~1 Minute: <http://localhost:5050> öffnen → Konto anlegen (erste
 Registrierung wird Admin).
 
 ## 2. Social-Accounts verbinden
@@ -28,12 +37,36 @@ Developer-App-Keys — die Anleitung je Plattform steht in der Postiz-Doku
 > Tipp für den Start: **LinkedIn zuerst** — der Flow ist am einfachsten,
 > und für dein Agentur-Marketing ist es ohnehin der wichtigste Kanal.
 
+### LinkedIn verbinden (einmalig, ~10 Minuten)
+
+Self-hosted Postiz braucht eine **eigene LinkedIn-Developer-App**:
+
+1. <https://developer.linkedin.com> → **Create app**. Pflichtfeld ist eine
+   verknüpfte **LinkedIn-Unternehmensseite** — falls noch keine existiert,
+   vorher unter <https://www.linkedin.com/company/setup/new/> anlegen (2 Min.).
+2. In der App → Tab **Products**: **„Share on LinkedIn"** und **„Sign In with
+   LinkedIn using OpenID Connect"** anfordern (beide werden sofort freigeschaltet).
+3. Tab **Auth** → **Authorized redirect URLs** eintragen:
+   `http://localhost:5050/integrations/social/linkedin`
+   (bzw. deine `FRONTEND_URL` + `/integrations/social/linkedin`).
+4. **Client ID** und **Primary Client Secret** (Tab Auth) in die
+   `docker-compose.yml` bei `LINKEDIN_CLIENT_ID`/`LINKEDIN_CLIENT_SECRET`
+   eintragen → `docker compose up -d` (Container startet neu).
+5. Postiz → **Add Channel → LinkedIn** → OAuth durchklicken → dein Profil
+   erscheint als Kanal. Fertig.
+
+> **Persönliches Profil vs. Unternehmensseite:** Posten aufs persönliche
+> Profil funktioniert sofort („Share on LinkedIn"). Für das Posten **als
+> Unternehmensseite** verlangt LinkedIn zusätzlich die Freigabe der
+> Community-Management-API (Antrag, dauert Tage bis Wochen) — fürs
+> Agentur-Marketing ist das persönliche Profil ohnehin der stärkere Kanal.
+
 ## 3. API-Key für den Content-Pilot holen
 
 Postiz → **Settings → Public API** → Key kopieren. Dann:
 
 ```bash
-export CP_POSTIZ_URL="http://localhost:5000/api"
+export CP_POSTIZ_URL="http://localhost:5050/api"
 export CP_POSTIZ_API_KEY="<dein-key>"
 ```
 

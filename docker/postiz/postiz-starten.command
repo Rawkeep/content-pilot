@@ -49,11 +49,26 @@ echo
 echo "… Postiz startet (beim ersten Mal dauert der Download ein paar Minuten) …"
 docker compose up -d
 
-# 5) Warten bis die Oberfläche antwortet, dann Browser öffnen
-for i in $(seq 1 90); do
-  if curl -sf http://localhost:5050 >/dev/null 2>&1; then break; fi
-  sleep 2
-done
+# 5) Warten, bis das Backend antwortet (nicht nur die Oberfläche).
+#    Gibt der interne Prozess-Manager das Backend beim Erststart auf
+#    (Temporal/ES noch nicht bereit), hilft genau ein Neustart.
+warte_auf_backend() {
+  for i in $(seq 1 $1); do
+    code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5050/api/user/self 2>/dev/null)
+    case "$code" in 200|401|403) return 0 ;; esac
+    sleep 5
+  done
+  return 1
+}
+echo "… warte auf das Backend (Erststart kann mehrere Minuten dauern) …"
+if ! warte_auf_backend 48; then
+  echo "→ Backend noch nicht da — starte den Postiz-Container einmal neu …"
+  docker compose restart postiz >/dev/null 2>&1
+  warte_auf_backend 60 || {
+    echo "✗ Backend antwortet weiterhin nicht. Logs ansehen mit:"
+    echo "  docker compose logs postiz | grep -iE '[0-9]\|backend' | tail -30"
+  }
+fi
 open "http://localhost:5050" 2>/dev/null || xdg-open "http://localhost:5050" 2>/dev/null \
   || echo "→ Bitte http://localhost:5050 im Browser öffnen."
 

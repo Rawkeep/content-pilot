@@ -91,4 +91,4 @@ ruff format . && ruff check . && python3 -m mypy && python3 -m pytest -q
 ```
 
 ---
-© Rawkeep · Inhaber: Frakibou Imqhamed · <https://rawkeep.com>
+© Rawkeep · <https://rawkeep.com>
